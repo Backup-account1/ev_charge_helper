@@ -60,6 +60,19 @@ async def status(message: Message):
     logger.info(f"User {message.from_user.id} requested status")
     await message.answer("Charging-session monitoring is ready for authenticated provider adapters.")
 
+@dp.message(Command("watch"))
+async def watch_cmd(message: Message):
+    logger.info(f"User {message.from_user.id} requested watch")
+    await message.answer(
+        "👀 Watch mode\n\n"
+        "Monitoring will check your active charging session periodically.\n\n"
+        "⚠️ Provider monitoring is not connected yet."
+    )
+
+
+@dp.message(lambda message: message.text == "👀 Watch")
+async def watch_button(message: Message):
+    await watch_cmd(message)
 async def main():
     logger.info("Starting EV Charge Agent bot")
     

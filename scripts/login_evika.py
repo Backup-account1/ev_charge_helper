@@ -8,7 +8,7 @@ OUT = "data/auth/evika.json"
 async def main():
     Path("data/auth").mkdir(parents=True, exist_ok=True)
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=False)
+        browser = await p.chromium.launch(headless=False, channel="chrome")
         context = await browser.new_context()
         page = await context.new_page()
         await page.goto(URL)

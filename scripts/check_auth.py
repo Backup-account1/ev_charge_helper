@@ -12,7 +12,7 @@ async def check(name, url, state):
         print(f"{name}: MISSING {state}")
         return False
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)
+        browser = await p.chromium.launch(headless=True, channel="chrome")
         context = await browser.new_context(storage_state=state)
         page = await context.new_page()
         await page.goto(url, wait_until="domcontentloaded", timeout=30000)

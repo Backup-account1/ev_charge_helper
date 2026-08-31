@@ -8,8 +8,16 @@ OUT = "data/auth/malanka.json"
 async def main():
     Path("data/auth").mkdir(parents=True, exist_ok=True)
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=False)
-        context = await browser.new_context()
+        browser = await p.chromium.launch(headless=False, channel="chrome")
+        #context = await browser.new_context()
+        context = await browser.new_context(
+            storage_state=str(auth_file),
+            permissions=["geolocation"],
+            geolocation={
+                "latitude": 53.9006,
+                "longitude": 27.5590,
+            },
+        )
         page = await context.new_page()
         await page.goto(URL)
         print("Log in manually in the opened browser.")

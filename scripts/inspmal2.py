@@ -1,0 +1,59 @@
+import asyncio
+from pathlib import Path
+from playwright.async_api import async_playwright
+
+
+async def main():
+    auth = Path("data/auth/malanka.json")
+
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=False)
+
+        context = await browser.new_context(
+            storage_state=str(auth),
+            permissions=["geolocation"],
+            geolocation={
+                "latitude": 53.9006,
+                "longitude": 27.5590,
+            },
+        )
+
+        page = await context.new_page()
+
+        def response_handler(response):
+            url = response.url
+
+            if any(x in url.lower() for x in [
+                "api",
+                "charge",
+                "session",
+                "connector",
+                "station",
+                "transaction",
+                "status",
+            ]):
+                print(f"\n[{response.status}] {url}")
+
+        page.on("response", response_handler)
+
+        await page.goto(
+            "https://customer.malankabn.by/map/",
+            wait_until="domcontentloaded",
+            timeout=60000,
+        )
+
+        print("URL:", page.url)
+        print("TITLE:", await page.title())
+
+        await page.wait_for_timeout(15000)
+
+        print("\n--- PAGE TEXT ---")
+        print((await page.locator("body").inner_text())[:20000])
+
+        input("\nPress Enter to close browser...")
+
+        await browser.close()
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
